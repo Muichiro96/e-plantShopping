@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 export const CartSlice = createSlice({
   name: 'cart',
   initialState: {
-    items: [], // Initialize items as an empty array
+    items: [],
+    totalItems : 0, // Initialize items as an empty array
   },
   reducers: {
     
@@ -14,16 +15,23 @@ export const CartSlice = createSlice({
     existingItem.quantity++;
   } else {
     state.items.push({ name, image, cost, quantity: 1 });
-  }
+    state.totalItems++;
+}
 },
     removeItem: (state, action) => {
-    state.items = state.items.filter(item => item.name !== action.payload);
-    },
+        const itemToRemove = state.items.find(item => item.name === action.payload);
+
+        if (itemToRemove) {
+          state.totalItems -= itemToRemove.quantity;  // Actualiza el número total de ítems
+          state.items = state.items.filter(item => item.name !== action.payload);
+        }
+},
     updateQuantity: (state, action) => {
 
         const { name, quantity } = action.payload;
         const itemToUpdate = state.items.find(item => item.name === name);
 if (itemToUpdate) { 
+     state.totalItems += (quantity - itemToUpdate.quantity);
   itemToUpdate.quantity = quantity;
 }
     },
